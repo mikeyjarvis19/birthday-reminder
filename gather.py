@@ -10,6 +10,14 @@ from google.auth.transport.requests import Request
 SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"]
 
 
+def parse_event(event_dict):
+    who = event_dict['summary'].split("\'")[0]
+    when_str = event_dict['start']['date']
+    when_datetime = datetime.datetime.strptime(when_str, '%Y-%m-%d')
+    time_until_birthday = when_datetime - datetime.datetime.now()
+    print(f"It's {who}'s birthday in {time_until_birthday.days} days!")
+
+
 def main():
     creds = None
     # The file token.pickle stores the user's access and refresh tokens, and is
@@ -50,7 +58,7 @@ def main():
     if not events:
         print("No upcoming events found.")
     for event in events:
-        print(event["summary"])
+        parse_event(event)
 
 
 if __name__ == "__main__":
