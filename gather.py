@@ -10,12 +10,27 @@ from google.auth.transport.requests import Request
 SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"]
 
 
+class BirthdayEvent():
+
+    def __init__(self, who, when_datetime):
+        self.who = who
+        self.when_datetime = when_datetime
+        self.days_until = (when_datetime - datetime.datetime.now()).days
+
+
 def parse_event(event_dict):
     who = event_dict['summary'].split("\'")[0]
     when_str = event_dict['start']['date']
     when_datetime = datetime.datetime.strptime(when_str, '%Y-%m-%d')
-    time_until_birthday = when_datetime - datetime.datetime.now()
-    print(f"It's {who}'s birthday in {time_until_birthday.days} days!")
+    return BirthdayEvent(who, when_datetime)
+
+
+def alert_birthday(birthday_event, warn_within_days=190):
+    if birthday_event.days_until <= warn_within_days:
+        print(
+            f"It's {birthday_event.who}'s birthday in "
+            f"{birthday_event.days_until} days!"
+        )
 
 
 def main():
@@ -58,7 +73,9 @@ def main():
     if not events:
         print("No upcoming events found.")
     for event in events:
-        parse_event(event)
+        birthday_event = parse_event(event)
+        alert_birthday(birthday_event)
+
 
 
 if __name__ == "__main__":
