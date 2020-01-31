@@ -4,10 +4,18 @@ import os.path
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"]
-# TODO are there too many classes?
+MY_ADDRESS = ""
+PASSWORD = ""
+SMTP_HOST = "smtp-mail.outlook.com"
+SMTP_PORT = 587
+EMAIL_TO_ALERT = ""
 
 
 class BirthdayEvent:
@@ -15,8 +23,6 @@ class BirthdayEvent:
         self.who = who
         self.when_datetime = when_datetime
         self.days_until = (when_datetime - datetime.datetime.now()).days
-        # TODO: Work this out
-        self.is_self = None
 
 
 def parse_event(event_dict):
@@ -26,14 +32,47 @@ def parse_event(event_dict):
     return BirthdayEvent(who, when_datetime)
 
 
-def alert_birthday(birthday_event, warn_within_days=365):
+def alert_birthday(birthday_event, warn_within_days=100):
     if birthday_event.days_until <= warn_within_days:
         print(
             f"It's {birthday_event.who}'s birthday in "
             f"{birthday_event.days_until} days! ("
             f"{birthday_event.when_datetime.strftime('%d-%m-%Y')})"
         )
+        sender_instance = EmailSender()
+        sender_instance.send(birthday_event)
 
+class EmailSender:
+    """Send emails"""
+
+    def __init__(self):
+        self.sender = smtplib.SMTP(host=SMTP_HOST, port=SMTP_PORT)
+        self.sender.starttls()
+        self.sender.login(MY_ADDRESS, PASSWORD)
+        print("Sender logged in")
+
+    def send(self, birthday_event):
+        msg = MIMEMultipart()  # create a message
+
+        # add in the actual person name to the message template
+        message = (f"It's {birthday_event.who}'s birthday in " 
+                  f"{birthday_event.days_until} days! ("
+                  f"{birthday_event.when_datetime.strftime('%d-%m-%Y')})")
+
+        # setup the parameters of the message
+        msg['From'] = MY_ADDRESS
+        msg['To'] = EMAIL_TO_ALERT
+        msg['Subject'] = "This is TEST"
+
+        # add in the message body
+        msg.attach(MIMEText(message, 'plain'))
+
+        # send the message via the server set up earlier.
+        self.sender.send_message(msg)
+
+        del msg
+        
+        print("Email sent!")
 
 class CredsManager:
     """Setup creds"""
@@ -92,7 +131,8 @@ def main():
     events = event_retriever.retrieve_events()
     for event in events:
         parsed_event = parse_event(event)
-        alert_birthday(parsed_event)
+        if parsed_event.who != 'Happy birthday!':
+            alert_birthday(parsed_event)
 
 
 if __name__ == "__main__":
