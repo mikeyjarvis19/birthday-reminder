@@ -10,7 +10,7 @@ SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"]
 # TODO are there too many classes?
 
 
-class BirthdayEvent():
+class BirthdayEvent:
     def __init__(self, who, when_datetime):
         self.who = who
         self.when_datetime = when_datetime
@@ -20,9 +20,9 @@ class BirthdayEvent():
 
 
 def parse_event(event_dict):
-    who = event_dict['summary'].split("\'")[0]
-    when_str = event_dict['start']['date']
-    when_datetime = datetime.datetime.strptime(when_str, '%Y-%m-%d')
+    who = event_dict["summary"].split("'")[0]
+    when_str = event_dict["start"]["date"]
+    when_datetime = datetime.datetime.strptime(when_str, "%Y-%m-%d")
     return BirthdayEvent(who, when_datetime)
 
 
@@ -30,11 +30,12 @@ def alert_birthday(birthday_event, warn_within_days=365):
     if birthday_event.days_until <= warn_within_days:
         print(
             f"It's {birthday_event.who}'s birthday in "
-            f"{birthday_event.days_until} days!"
+            f"{birthday_event.days_until} days! ("
+            f"{birthday_event.when_datetime.strftime('%d-%m-%Y')})"
         )
 
 
-class CredsManager():
+class CredsManager:
     """Setup creds"""
 
     def __init__(self):
@@ -64,7 +65,7 @@ class CredsManager():
         return creds
 
 
-class EventRetriever():
+class EventRetriever:
     def __init__(self, creds):
         self.creds = creds
         self.service = build("calendar", "v3", credentials=creds)
@@ -74,7 +75,7 @@ class EventRetriever():
         print("Getting the upcoming birthday events")
         events_result = (
             self.service.events()
-                .list(
+            .list(
                 calendarId="addressbook#contacts@group.v.calendar.google.com",
                 timeMin=now,
                 singleEvents=True,
