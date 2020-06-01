@@ -1,6 +1,6 @@
 from flask import Flask
 from flask import jsonify
-from control import Control
+from Logic.control import Control
 
 control = Control()
 app = Flask(__name__)
