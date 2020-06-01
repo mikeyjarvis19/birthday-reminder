@@ -13,6 +13,7 @@ class CredsManager:
         self.creds = self.setup_creds()
 
     def setup_creds(self):
+        scopes = ["https://www.googleapis.com/auth/calendar.readonly"]
         creds = None
         # The file token.pickle stores the user's access and refresh tokens, and is
         # created automatically when the authorization flow completes for the first
@@ -26,7 +27,7 @@ class CredsManager:
                 creds.refresh(Request())
             else:
                 flow = InstalledAppFlow.from_client_secrets_file(
-                    "credentials.json", SCOPES
+                    "credentials.json", scopes
                 )
                 creds = flow.run_local_server(port=0)
             # Save the credentials for the next run
