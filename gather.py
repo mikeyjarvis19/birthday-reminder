@@ -39,8 +39,9 @@ def alert_birthday(birthday_event, warn_within_days=100):
             f"{birthday_event.days_until} days! ("
             f"{birthday_event.when_datetime.strftime('%d-%m-%Y')})"
         )
-        sender_instance = EmailSender()
-        sender_instance.send(birthday_event)
+        # sender_instance = EmailSender()
+        # sender_instance.send(birthday_event)
+
 
 class EmailSender:
     """Send emails"""
@@ -55,24 +56,27 @@ class EmailSender:
         msg = MIMEMultipart()  # create a message
 
         # add in the actual person name to the message template
-        message = (f"It's {birthday_event.who}'s birthday in " 
-                  f"{birthday_event.days_until} days! ("
-                  f"{birthday_event.when_datetime.strftime('%d-%m-%Y')})")
+        message = (
+            f"It's {birthday_event.who}'s birthday in "
+            f"{birthday_event.days_until} days! ("
+            f"{birthday_event.when_datetime.strftime('%d-%m-%Y')})"
+        )
 
         # setup the parameters of the message
-        msg['From'] = MY_ADDRESS
-        msg['To'] = EMAIL_TO_ALERT
-        msg['Subject'] = "This is TEST"
+        msg["From"] = MY_ADDRESS
+        msg["To"] = EMAIL_TO_ALERT
+        msg["Subject"] = "This is TEST"
 
         # add in the message body
-        msg.attach(MIMEText(message, 'plain'))
+        msg.attach(MIMEText(message, "plain"))
 
         # send the message via the server set up earlier.
         self.sender.send_message(msg)
 
         del msg
-        
+
         print("Email sent!")
+
 
 class CredsManager:
     """Setup creds"""
@@ -131,7 +135,7 @@ def main():
     events = event_retriever.retrieve_events()
     for event in events:
         parsed_event = parse_event(event)
-        if parsed_event.who != 'Happy birthday!':
+        if parsed_event.who != "Happy birthday!":
             alert_birthday(parsed_event)
 
 
