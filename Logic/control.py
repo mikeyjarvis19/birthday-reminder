@@ -4,6 +4,7 @@ import pickle
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
+from Logic.notifications import PushoverNotifications
 
 
 class CredsManager:
@@ -76,6 +77,7 @@ class Control:
     def __init__(self):
         self._creds_manager = CredsManager()
         self._event_retriever = EventRetriever(self._creds_manager.creds)
+        self._notifications = PushoverNotifications()
 
     def _parse_event(self, event_dict):
         who = event_dict["summary"].split("'")[0]
@@ -85,4 +87,13 @@ class Control:
 
     def get_events(self):
         events = self._event_retriever.retrieve_events()
+        # self.notify_event(self._parse_event(events[0]))
         return [self._parse_event(event).to_dict() for event in events]
+
+    def notify_event(self, birthday_event, warn_within_days=20):
+        title = f"It's {birthday_event.who}'s birthday soon!"
+        message = (f"It's in {birthday_event.days_until} days! "
+                   f"({birthday_event.when_datetime.strftime('%d-%m-%Y')})"
+                   )
+        if birthday_event.days_until <= warn_within_days:
+            self._notifications.send_notification(title, message)
