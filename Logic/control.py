@@ -19,8 +19,8 @@ class CredsManager:
         # The file token.pickle stores the user's access and refresh tokens, and is
         # created automatically when the authorization flow completes for the first
         # time.
-        if os.path.exists("token.pickle"):
-            with open("token.pickle", "rb") as token:
+        if os.path.exists("../token.pickle"):
+            with open("../token.pickle", "rb") as token:
                 creds = pickle.load(token)
         # If there are no (valid) credentials available, let the user log in.
         if not creds or not creds.valid:
@@ -28,11 +28,11 @@ class CredsManager:
                 creds.refresh(Request())
             else:
                 flow = InstalledAppFlow.from_client_secrets_file(
-                    "credentials.json", scopes
+                    "../credentials.json", scopes
                 )
                 creds = flow.run_local_server(port=0)
             # Save the credentials for the next run
-            with open("token.pickle", "wb") as token:
+            with open("../token.pickle", "wb") as token:
                 pickle.dump(creds, token)
 
         return creds
@@ -87,13 +87,17 @@ class Control:
 
     def get_events(self):
         events = self._event_retriever.retrieve_events()
-        # self.notify_event(self._parse_event(events[0]))
-        return [self._parse_event(event).to_dict() for event in events]
+        return [self._parse_event(event) for event in events]
 
-    def notify_event(self, birthday_event, warn_within_days=20):
+    def check_events(self, warn_days=[14, 30]):
+        events = self.get_events()
+        for event in events:
+            if event.days_until in warn_days:
+                self.notify_event(event)
+
+    def notify_event(self, birthday_event):
         title = f"It's {birthday_event.who}'s birthday soon!"
         message = (f"It's in {birthday_event.days_until} days! "
                    f"({birthday_event.when_datetime.strftime('%d-%m-%Y')})"
                    )
-        if birthday_event.days_until <= warn_within_days:
-            self._notifications.send_notification(title, message)
+        self._notifications.send_notification(title, message)

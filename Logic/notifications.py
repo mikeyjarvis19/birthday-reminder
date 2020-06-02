@@ -5,7 +5,7 @@ import json
 class PushoverNotifications:
 
     def __init__(self):
-        credentials = json.loads(open("pushover_credentials.json").read())
+        credentials = json.loads(open("../pushover_credentials.json").read())
         self.url = "https://api.pushover.net/1/messages.json"
         self.user = credentials["user"]
         self.token = credentials["token"]
@@ -14,6 +14,5 @@ class PushoverNotifications:
         data = {"user": self.user, "token": self.token, "title": title,
                 "message": message}
         response = requests.post(self.url, data=data)
-        # todo: check this is 200
-        print(response.status_code)
+        print(f"Retrieved response code: '{response.status_code}' from '{self.url}'")
 
