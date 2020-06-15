@@ -4,7 +4,7 @@ import pickle
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
-from Logic.notifications import PushoverNotifications
+from notifications import PushoverNotifications
 
 
 class CredsManager:
@@ -19,8 +19,8 @@ class CredsManager:
         # The file token.pickle stores the user's access and refresh tokens, and is
         # created automatically when the authorization flow completes for the first
         # time.
-        if os.path.exists("../token.pickle"):
-            with open("../token.pickle", "rb") as token:
+        if os.path.exists("token.pickle"):
+            with open("token.pickle", "rb") as token:
                 creds = pickle.load(token)
         # If there are no (valid) credentials available, let the user log in.
         if not creds or not creds.valid:
@@ -28,11 +28,11 @@ class CredsManager:
                 creds.refresh(Request())
             else:
                 flow = InstalledAppFlow.from_client_secrets_file(
-                    "../credentials.json", scopes
+                    "credentials.json", scopes
                 )
                 creds = flow.run_local_server(port=0)
             # Save the credentials for the next run
-            with open("../token.pickle", "wb") as token:
+            with open("token.pickle", "wb") as token:
                 pickle.dump(creds, token)
 
         return creds
@@ -63,6 +63,7 @@ class BirthdayEvent:
     def __init__(self, who, when_datetime):
         self.who = who
         self.when_datetime = when_datetime
+        # TODO is this days until one off?
         self.days_until = (when_datetime - datetime.datetime.now()).days
 
     def to_dict(self):
@@ -89,7 +90,7 @@ class Control:
         events = self._event_retriever.retrieve_events()
         return [self._parse_event(event) for event in events]
 
-    def check_events(self, warn_days=[14, 30]):
+    def check_events(self, warn_days=[4, 5, 6, 7, 14, 30]):
         events = self.get_events()
         for event in events:
             if event.days_until in warn_days:
