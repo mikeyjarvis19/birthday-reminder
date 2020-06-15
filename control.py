@@ -63,8 +63,7 @@ class BirthdayEvent:
     def __init__(self, who, when_datetime):
         self.who = who
         self.when_datetime = when_datetime
-        # TODO is this days until one off?
-        self.days_until = (when_datetime - datetime.datetime.now()).days
+        self.days_until = (when_datetime - datetime.datetime.now()).days + 1
 
     def to_dict(self):
         return {
@@ -90,7 +89,9 @@ class Control:
         events = self._event_retriever.retrieve_events()
         return [self._parse_event(event) for event in events]
 
-    def check_events(self, warn_days=[4, 5, 6, 7, 14, 30]):
+    def check_events(self, warn_days=None):
+        if not warn_days:
+            warn_days = range(0, 30)
         events = self.get_events()
         for event in events:
             if event.days_until in warn_days:
@@ -98,7 +99,8 @@ class Control:
 
     def notify_event(self, birthday_event):
         title = f"It's {birthday_event.who}'s birthday soon!"
-        message = (f"It's in {birthday_event.days_until} days! "
-                   f"({birthday_event.when_datetime.strftime('%d-%m-%Y')})"
-                   )
+        message = (
+            f"It's in {birthday_event.days_until} days! "
+            f"({birthday_event.when_datetime.strftime('%d-%m-%Y')})"
+        )
         self._notifications.send_notification(title, message)
