@@ -98,9 +98,12 @@ class Control:
                 self.notify_event(event)
 
     def notify_event(self, birthday_event):
-        title = f"It's {birthday_event.who}'s birthday soon!"
+        title = f"It's {birthday_event.who}'s birthday " \
+        f"{'today' if birthday_event.days_until == 0 else 'soon'}!"
         message = (
             f"It's in {birthday_event.days_until} days! "
             f"({birthday_event.when_datetime.strftime('%d-%m-%Y')})"
+            if birthday_event.days_until > 0
+            else "Happy Birthday!"
         )
         self._notifications.send_notification(title, message)
