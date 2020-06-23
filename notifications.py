@@ -1,5 +1,9 @@
 import requests
 import json
+import logging_setup
+
+
+logger = logging_setup.get_logger("notifications")
 
 
 class PushoverNotifications:
@@ -17,6 +21,6 @@ class PushoverNotifications:
             "message": message,
         }
         response = requests.post(self.url, data=data)
-        print(
+        logger.info(
             f"Retrieved response code: '{response.status_code}' from '{self.url}'"
         )
