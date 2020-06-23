@@ -5,6 +5,10 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 from notifications import PushoverNotifications
+import logging_setup
+
+
+logger = logging_setup.get_logger("control")
 
 
 class CredsManager:
@@ -45,7 +49,7 @@ class EventRetriever:
 
     def retrieve_events(self):
         now = datetime.datetime.utcnow().isoformat() + "Z"
-        print("Getting the upcoming birthday events")
+        logger.info("Getting the upcoming birthday events")
         events_result = (
             self.service.events()
             .list(
@@ -91,15 +95,21 @@ class Control:
 
     def check_events(self, warn_days=None):
         if not warn_days:
-            warn_days = range(0, 30)
+            warn_days = range(0, 100)
         events = self.get_events()
-        for event in events:
-            if event.days_until in warn_days:
-                self.notify_event(event)
+        logger.info(f"Retrieved {len(events)} events")
+        events_to_notify = [
+            event for event in events if event.days_until in warn_days
+        ]
+        logger.info(f"Sending notifications for {len(events_to_notify)} events")
+        for event in events_to_notify:
+            self.notify_event(event)
 
     def notify_event(self, birthday_event):
-        title = f"It's {birthday_event.who}'s birthday " \
-        f"{'today' if birthday_event.days_until == 0 else 'soon'}!"
+        title = (
+            f"It's {birthday_event.who}'s birthday "
+            f"{'today' if birthday_event.days_until == 0 else 'soon'}!"
+        )
         message = (
             f"It's in {birthday_event.days_until} days! "
             f"({birthday_event.when_datetime.strftime('%d-%m-%Y')})"
