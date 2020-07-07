@@ -95,7 +95,7 @@ class Control:
 
     def check_events(self, warn_days=None):
         if not warn_days:
-            warn_days = range(0, 100)
+            warn_days = [30, 14, 7, 5, 0]
         events = self.get_events()
         logger.info(f"Retrieved {len(events)} events")
         events_to_notify = [
