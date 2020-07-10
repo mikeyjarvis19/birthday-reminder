@@ -18,7 +18,7 @@ class BirthdayEvent:
         """
         self.who = who
         self.when_datetime = when_datetime
-        self.days_until = (when_datetime - datetime.datetime.now()).days + 1
+        self.days_until = self.calculate_days_until(when_datetime)
 
     def to_dict(self):
         return {
@@ -26,6 +26,22 @@ class BirthdayEvent:
             "when_datetime": str(self.when_datetime),
             "days_until": self.days_until,
         }
+
+    @staticmethod
+    def calculate_days_until(when_datetime, now=datetime.datetime.now()):
+        try:
+            days_until = (when_datetime - now).days
+        except TypeError as ex:
+            logger.exception(
+                f"Exception when trying to calculate days until event: {ex}"
+            )
+            raise ex
+        seconds_since_midnight = (
+            now - now.replace(hour=0, minute=0, second=0, microsecond=0)
+        ).total_seconds()
+        if seconds_since_midnight:
+            days_until += 1
+        return days_until
 
 
 class EventRetriever:
@@ -73,4 +89,3 @@ class EventChecker:
         logger.info(f"Sending notifications for {len(events_to_notify)} events")
         for event in events_to_notify:
             self._notifications.notify_event(event)
-
