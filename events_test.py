@@ -47,3 +47,7 @@ class TestBirthdayEvent:
         expected_days_until = 5
         days_until = BirthdayEvent.calculate_days_until(event_date, current_date)
         assert days_until == expected_days_until
+
+class TestEventChecker:
+    def test_stuff(self):
+        pass

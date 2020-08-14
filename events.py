@@ -73,10 +73,15 @@ class EventRetriever:
 
 
 class EventChecker:
-    def __init__(self):
-        self._creds_manager = CredsManager()
-        self._event_retriever = EventRetriever(self._creds_manager.creds)
-        self._notifications = NotificationSender()
+    def __init__(
+        self, creds_manager=None, event_retriever=None, notifications=None
+    ):
+        if not creds_manager:
+            self._creds_manager = CredsManager()
+        if not event_retriever:
+            self._event_retriever = EventRetriever(self._creds_manager.creds)
+        if not notifications:
+            self._notifications = NotificationSender()
 
     def check_events(self, warn_days=None):
         if not warn_days:

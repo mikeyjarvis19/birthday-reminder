@@ -24,6 +24,7 @@ class PushoverNotifications:
         logger.info(
             f"Retrieved response code: '{response.status_code}' from '{self.url}'"
         )
+        return response.status_code
 
 
 class NotificationSender:

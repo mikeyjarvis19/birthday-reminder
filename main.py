@@ -19,5 +19,6 @@ schedule.every().day.at("09:00").do(check_for_events)
 if __name__ == "__main__":
     logger.info("Starting Birthday Reminder")
     while True:
-        schedule.run_pending()
-        time.sleep(1)
+        check_for_events()
+        # schedule.run_pending()
+        time.sleep(5)
