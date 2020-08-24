@@ -20,3 +20,4 @@ if __name__ == "__main__":
     logger.info("Starting Birthday Reminder")
     while True:
         schedule.run_pending()
+        time.sleep(1)
