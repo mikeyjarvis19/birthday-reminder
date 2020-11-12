@@ -43,6 +43,19 @@ class BirthdayEvent:
             days_until += 1
         return days_until
 
+    def __str__(self):
+        return (
+            f"BirthdayEvent object (who: `{self.who}`, when_datetime: "
+            f"`{self.when_datetime}`, days_until: `{self.days_until}`)"
+        )
+
+    def __repr__(self):
+        return (
+            f"BirthdayEvent object (who: `{self.who}`, when_datetime: "
+            f"`{self.when_datetime}`, days_until: `{self.days_until}`)"
+        )
+
+
 
 class EventRetriever:
     def __init__(self, creds):
@@ -87,10 +100,13 @@ class EventChecker:
         if not warn_days:
             warn_days = [30, 14, 7, 5, 0]
         events = self._event_retriever.retrieve_events()
+        logger.debug("Retrieved events: %r ", events)
         logger.info(f"Retrieved {len(events)} events")
+        logger.debug("Warn days: %r", warn_days)
         events_to_notify = [
             event for event in events if event.days_until in warn_days
         ]
+        logger.debug("Events to notify: %r ", events_to_notify)
         logger.info(f"Sending notifications for {len(events_to_notify)} events")
         for event in events_to_notify:
             self._notifications.notify_event(event)
