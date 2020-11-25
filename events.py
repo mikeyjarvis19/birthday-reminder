@@ -28,16 +28,18 @@ class BirthdayEvent:
         }
 
     @staticmethod
-    def calculate_days_until(when_datetime, now=datetime.datetime.now()):
+    def calculate_days_until(when_datetime, now=None):
+        now_datetime = now if now else datetime.datetime.now()
         try:
-            days_until = (when_datetime - now).days
+            days_until = (when_datetime - now_datetime).days
         except TypeError as ex:
             logger.exception(
                 f"Exception when trying to calculate days until event: {ex}"
             )
             raise ex
         seconds_since_midnight = (
-            now - now.replace(hour=0, minute=0, second=0, microsecond=0)
+            now_datetime
+            - now_datetime.replace(hour=0, minute=0, second=0, microsecond=0)
         ).total_seconds()
         if seconds_since_midnight:
             days_until += 1
@@ -54,7 +56,6 @@ class BirthdayEvent:
             f"BirthdayEvent object (who: `{self.who}`, when_datetime: "
             f"`{self.when_datetime}`, days_until: `{self.days_until}`)"
         )
-
 
 
 class EventRetriever:
