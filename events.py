@@ -41,6 +41,7 @@ class BirthdayEvent:
             now_datetime
             - now_datetime.replace(hour=0, minute=0, second=0, microsecond=0)
         ).total_seconds()
+        # Todo: This +1 for seconds after midnight is BS and needs to be removed
         if seconds_since_midnight:
             days_until += 1
         return days_until

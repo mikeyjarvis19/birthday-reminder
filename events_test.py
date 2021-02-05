@@ -13,6 +13,8 @@ class TestBirthdayEvent:
         assert event.who == who
         assert event.when_datetime <= datetime.datetime.now()
 
+    # TODO: This test is probably not executing the logging init from the start of
+    #  'events.py', so the log entries are going to the root logger.
     def test_init_birthday_event_bad_when(self):
         # TODO: Assert log/ exception messages here + hide exceptions in logs.
         # with caplog.at_level(logging.CRITICAL, logger="root.baz") as log:
@@ -47,6 +49,7 @@ class TestBirthdayEvent:
         expected_days_until = 5
         days_until = BirthdayEvent.calculate_days_until(event_date, current_date)
         assert days_until == expected_days_until
+
 
 class TestEventChecker:
     def test_stuff(self):
