@@ -8,7 +8,7 @@ logger = logging_setup.get_logger("notifications")
 
 class PushoverNotifications:
     def __init__(self):
-        credentials = json.loads(open("pushover_credentials.json").read())
+        credentials = json.loads(open("credentials/pushover_credentials.json").read())
         self.url = "https://api.pushover.net/1/messages.json"
         self.user = credentials["user"]
         self.token = credentials["token"]
