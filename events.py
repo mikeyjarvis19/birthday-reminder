@@ -1,6 +1,6 @@
 import datetime
 from googleapiclient.discovery import build
-from credentials import CredsManager, logger
+from credentials import CredsManager
 from notifications import NotificationSender
 import logging_setup
 

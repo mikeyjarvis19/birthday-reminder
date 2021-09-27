@@ -3,3 +3,4 @@ token.pickle
 .idea
 __pycache__
 birthday_reminder.log
+credentials/*
